@@ -66,12 +66,20 @@ public class ExampleSubsystem extends SubsystemBase {
     double x = controller.getRawAxis(0);
     double y = controller.getRawAxis(1);
 
-    double angle = Math.toDegrees(Math.tan(y / x));
-    angle = (angle + 360) % 360;
+    double epsilon = .9;
 
-    SmartDashboard.putNumber("Angle", angle);
+    if(Math.abs(x) + Math.abs(y) < epsilon)
+    {
+        return;
+    }
+    
+    double angle = Math.toDegrees(Math.atan2(-y , x));
 
-    TurnToAngle((controller.getPOV() + 360) % 360);
+    // Map the angle to the correct thing
+    angle = (angle + 270) % 360;
+
+
+    TurnToAngle(angle);
   }
 
   @Override
