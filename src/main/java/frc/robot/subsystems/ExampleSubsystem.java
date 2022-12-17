@@ -36,7 +36,8 @@ public class ExampleSubsystem extends SubsystemBase {
   CANSparkMax turnMotor8 = new CANSparkMax(8, MotorType.kBrushless);
   CANCoder encoder4 = new CANCoder(4);
 
-  public ExampleSubsystem() {
+  public ExampleSubsystem()
+  {
 
     encoder1.configFactoryDefault();
     offset = encoder1.getAbsolutePosition();
