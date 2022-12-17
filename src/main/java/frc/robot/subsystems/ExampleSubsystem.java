@@ -12,6 +12,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class ExampleSubsystem extends SubsystemBase {
   XboxController controller = new XboxController(0);
@@ -45,10 +46,16 @@ public class ExampleSubsystem extends SubsystemBase {
 
   public void TurnToAngle(double targetAngle) {
 
-    double theta = targetAngle - offsetPosition;
+    // theta is the angle from the motor to the target
+    double theta;
+    theta = (targetAngle + 360 - offsetPosition) % 360;
 
-    // System.out.println(theta);
+    // This assumes the theta is in the value of 0-360
+    double alternateTheta = (360 - theta) % 360;
+    theta = (theta < alternateTheta) ? theta : -alternateTheta;
+    
 
+    SmartDashboard.putNumber("Theta", -theta);
     turnMotor2.set(controllerIDK.calculate(-theta));
   }
 
@@ -56,7 +63,6 @@ public class ExampleSubsystem extends SubsystemBase {
   public void periodic() {
 
     offsetPosition = encoder1.getAbsolutePosition() - offset;
-
     // Map offset position from range 0-360
     offsetPosition = (offsetPosition + 360) % 360;
 
@@ -66,18 +72,18 @@ public class ExampleSubsystem extends SubsystemBase {
     double x = controller.getRawAxis(0);
     double y = controller.getRawAxis(1);
 
-    double epsilon = .9;
+    double controllerEpsilon = .95;
 
-    if(Math.abs(x) + Math.abs(y) < epsilon)
+    if(Math.abs(x) + Math.abs(y) < controllerEpsilon)
     {
         return;
     }
     
     double angle = Math.toDegrees(Math.atan2(-y , x));
-
-    // Map the angle to the correct thing
+    // Map the angle so up on the joystick is 0 degrees
     angle = (angle + 270) % 360;
 
+    SmartDashboard.putNumber("Controller Angle", angle);
 
     TurnToAngle(angle);
   }
